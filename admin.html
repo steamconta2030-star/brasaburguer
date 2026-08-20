@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel | Brasa Burger House</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #15100d;
+      color: #f5eadf;
+    }
+
+    header {
+      padding: 24px;
+      background: #21160f;
+      border-bottom: 1px solid #5a3924;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    header p {
+      margin: 8px 0 0;
+      color: #c8b6a6;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .produto {
+      background: #211712;
+      border: 1px solid #4e3425;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+
+    .produto h2 {
+      margin-top: 0;
+      color: #e9a322;
+      font-size: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      font-weight: bold;
+      color: #d8c8ba;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #6c4a34;
+      background: #120d0a;
+      color: #fff;
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .linha {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .disponivel {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .disponivel input {
+      width: auto;
+    }
+
+    .acoes {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 8px;
+      padding: 12px 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .salvar {
+      background: #e9a322;
+      color: #1b120d;
+    }
+
+    .resetar {
+      background: #5b3a29;
+      color: #fff;
+    }
+
+    .abrir-site {
+      display: inline-block;
+      margin-bottom: 22px;
+      color: #e9a322;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .mensagem {
+      margin-top: 18px;
+      padding: 12px;
+      border-radius: 8px;
+      display: none;
+      background: #264b2f;
+      color: #d9ffdf;
+    }
+
+    @media (max-width: 700px) {
+      .linha {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>Painel Brasa Burger</h1>
+  <p>Edite o cardápio sem alterar o código.</p>
+</header>
+
+<main>
+
+  <a class="abrir-site" href="./index.html">← Voltar para o cardápio</a>
+
+  <div id="lista-produtos"></div>
+
+  <div class="acoes">
+    <button class="salvar" onclick="salvarProdutos()">Salvar alterações</button>
+    <button class="resetar" onclick="resetarProdutos()">Restaurar padrão</button>
+  </div>
+
+  <div class="mensagem" id="mensagem">
+    Alterações salvas neste navegador.
+  </div>
+
+</main>
+
+<script>
+  const produtosPadrao = [
+    {
+      id: "brasa-classico",
+      nome: "Brasa Clássico",
+      descricao: "Dois smash de 90g, queijo cheddar, cebola caramelizada e molho da casa no brioche.",
+      preco: 26.90,
+      categoria: "smash",
+      disponivel: true
+    },
+    {
+      id: "duplo-fumaca",
+      nome: "Duplo Fumaça",
+      descricao: "Dois smash de 90g, bacon crocante, queijo prato e maionese defumada.",
+      preco: 31.90,
+      categoria: "smash",
+      disponivel: true
+    },
+    {
+      id: "simples-brasa",
+      nome: "Simples Brasa",
+      descricao: "Um smash de 90g, queijo cheddar e picles no brioche. Direto ao ponto.",
+      preco: 19.90,
+      categoria: "smash",
+      disponivel: true
+    },
+    {
+      id: "costela-brioche",
+      nome: "Costela no Brioche",
+      descricao: "Costela desfiada 8h na brasa, queijo coalho grelhado e barbecue defumado.",
+      preco: 36.90,
+      categoria: "especiais",
+      disponivel: true
+    },
+    {
+      id: "brasa-especial-duplo",
+      nome: "Brasa Especial Duplo",
+      descricao: "Dois smash de 120g, queijo cheddar duplo, bacon, ovo e onion rings.",
+      preco: 38.90,
+      categoria: "especiais",
+      disponivel: true
+    },
+    {
+      id: "batata-rustica",
+      nome: "Batata Rústica",
+      descricao: "Porção generosa com alecrim e páprica defumada.",
+      preco: 15.90,
+      categoria: "acompanhamentos",
+      disponivel: true
+    },
+    {
+      id: "onion-rings",
+      nome: "Onion Rings",
+      descricao: "Anéis de cebola empanados e crocantes, com molho barbecue.",
+      preco: 17.90,
+      categoria: "acompanhamentos",
+      disponivel: true
+    },
+    {
+      id: "refrigerante-lata",
+      nome: "Refrigerante Lata",
+      descricao: "Coca-Cola, Guaraná ou Sprite, 350ml.",
+      preco: 7.00,
+      categoria: "bebidas",
+      disponivel: true
+    },
+    {
+      id: "suco-natural",
+      nome: "Suco Natural",
+      descricao: "Laranja, limão ou maracujá, 400ml.",
+      preco: 10.00,
+      categoria: "bebidas",
+      disponivel: true
+    }
+  ];
+
+  function carregarProdutos() {
+    const salvos = localStorage.getItem("brasaBurgerProdutos");
+
+    if (salvos) {
+      return JSON.parse(salvos);
+    }
+
+    localStorage.setItem(
+      "brasaBurgerProdutos",
+      JSON.stringify(produtosPadrao)
+    );
+
+    return produtosPadrao;
+  }
+
+  function renderizarProdutos() {
+    const produtos = carregarProdutos();
+    const lista = document.getElementById("lista-produtos");
+
+    lista.innerHTML = "";
+
+    produtos.forEach((produto, index) => {
+      const bloco = document.createElement("div");
+      bloco.className = "produto";
+
+      bloco.innerHTML = `
+        <h2>${produto.nome}</h2>
+
+        <label>Nome do produto</label>
+        <input
+          type="text"
+          id="nome-${index}"
+          value="${produto.nome}"
+        />
+
+        <label>Descrição</label>
+        <textarea
+          id="descricao-${index}"
+        >${produto.descricao}</textarea>
+
+        <div class="linha">
+          <div>
+            <label>Preço</label>
+            <input
+              type="number"
+              step="0.01"
+              id="preco-${index}"
+              value="${produto.preco}"
+            />
+          </div>
+
+          <div>
+            <label>Categoria</label>
+            <input
+              type="text"
+              id="categoria-${index}"
+              value="${produto.categoria}"
+            />
+          </div>
+        </div>
+
+        <label class="disponivel">
+          <input
+            type="checkbox"
+            id="disponivel-${index}"
+            ${produto.disponivel ? "checked" : ""}
+          />
+          Produto disponível
+        </label>
+      `;
+
+      lista.appendChild(bloco);
+    });
+  }
+
+  function salvarProdutos() {
+    const produtos = carregarProdutos();
+
+    const atualizados = produtos.map((produto, index) => ({
+      ...produto,
+      nome: document.getElementById(`nome-${index}`).value,
+      descricao: document.getElementById(`descricao-${index}`).value,
+      preco: Number(document.getElementById(`preco-${index}`).value),
+      categoria: document.getElementById(`categoria-${index}`).value,
+      disponivel: document.getElementById(`disponivel-${index}`).checked
+    }));
+
+    localStorage.setItem(
+      "brasaBurgerProdutos",
+      JSON.stringify(atualizados)
+    );
+
+    const mensagem = document.getElementById("mensagem");
+    mensagem.style.display = "block";
+
+    setTimeout(() => {
+      mensagem.style.display = "none";
+    }, 2500);
+
+    renderizarProdutos();
+  }
+
+  function resetarProdutos() {
+    const confirmar = confirm(
+      "Deseja restaurar todos os produtos para os valores originais?"
+    );
+
+    if (!confirmar) return;
+
+    localStorage.setItem(
+      "brasaBurgerProdutos",
+      JSON.stringify(produtosPadrao)
+    );
+
+    renderizarProdutos();
+  }
+
+  renderizarProdutos();
+</script>
+
+</body>
+</html>
