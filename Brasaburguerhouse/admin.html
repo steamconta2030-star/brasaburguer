@@ -39,6 +39,26 @@
       padding: 24px;
     }
 
+    .topo-acoes {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    .abrir-site {
+      color: #e9a322;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .novo {
+      background: #e9a322;
+      color: #1b120d;
+    }
+
     .produto {
       background: #211712;
       border: 1px solid #4e3425;
@@ -47,8 +67,17 @@
       margin-bottom: 18px;
     }
 
+    .produto-topo {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
     .produto h2 {
-      margin-top: 0;
+      margin: 0;
       color: #e9a322;
       font-size: 20px;
     }
@@ -62,7 +91,8 @@
     }
 
     input,
-    textarea {
+    textarea,
+    select {
       width: 100%;
       padding: 12px;
       border-radius: 8px;
@@ -94,19 +124,36 @@
       width: auto;
     }
 
-    .acoes {
+    .acoes-produto {
       display: flex;
-      gap: 12px;
-      margin-top: 24px;
+      gap: 8px;
       flex-wrap: wrap;
     }
 
     button {
       border: none;
       border-radius: 8px;
-      padding: 12px 18px;
+      padding: 10px 14px;
       font-weight: bold;
       cursor: pointer;
+    }
+
+    .subir,
+    .descer {
+      background: #3c2b21;
+      color: #fff;
+    }
+
+    .excluir {
+      background: #7d2727;
+      color: #fff;
+    }
+
+    .acoes {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
     }
 
     .salvar {
@@ -119,14 +166,6 @@
       color: #fff;
     }
 
-    .abrir-site {
-      display: inline-block;
-      margin-bottom: 22px;
-      color: #e9a322;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
     .mensagem {
       margin-top: 18px;
       padding: 12px;
@@ -134,6 +173,16 @@
       display: none;
       background: #264b2f;
       color: #d9ffdf;
+    }
+
+    .aviso {
+      background: #2a211b;
+      border: 1px solid #5a4434;
+      padding: 14px;
+      border-radius: 10px;
+      margin-bottom: 22px;
+      color: #cdbdaf;
+      line-height: 1.5;
     }
 
     @media (max-width: 700px) {
@@ -148,220 +197,350 @@
 
 <header>
   <h1>Painel Brasa Burger</h1>
-  <p>Edite o cardápio sem alterar o código.</p>
+  <p>Gerencie os produtos sem alterar o código.</p>
 </header>
 
 <main>
 
-  <a class="abrir-site" href="./index.html">← Voltar para o cardápio</a>
+  <div class="topo-acoes">
+    <a class="abrir-site" href="./index.html">
+      ← Voltar para o cardápio
+    </a>
+
+    <button class="novo" onclick="adicionarProduto()">
+      + Novo produto
+    </button>
+  </div>
+
+  <div class="aviso">
+    As alterações continuam salvas apenas neste navegador.
+    Depois vamos migrar tudo para Supabase.
+  </div>
 
   <div id="lista-produtos"></div>
 
   <div class="acoes">
-    <button class="salvar" onclick="salvarProdutos()">Salvar alterações</button>
-    <button class="resetar" onclick="resetarProdutos()">Restaurar padrão</button>
+    <button class="salvar" onclick="salvarProdutos()">
+      Salvar alterações
+    </button>
+
+    <button class="resetar" onclick="resetarProdutos()">
+      Restaurar padrão
+    </button>
   </div>
 
   <div class="mensagem" id="mensagem">
-    Alterações salvas neste navegador.
+    ✓ Alterações salvas neste navegador.
   </div>
 
 </main>
 
 <script>
-  const produtosPadrao = [
-    {
-      id: "brasa-classico",
-      nome: "Brasa Clássico",
-      descricao: "Dois smash de 90g, queijo cheddar, cebola caramelizada e molho da casa no brioche.",
-      preco: 29.90,
-      categoria: "smash",
-      disponivel: true
-    },
-    {
-      id: "duplo-fumaca",
-      nome: "Duplo Fumaça",
-      descricao: "Dois smash de 90g, bacon crocante, queijo prato e maionese defumada.",
-      preco: 31.90,
-      categoria: "smash",
-      disponivel: true
-    },
-    {
-      id: "simples-brasa",
-      nome: "Simples Brasa",
-      descricao: "Um smash de 90g, queijo cheddar e picles no brioche. Direto ao ponto.",
-      preco: 19.90,
-      categoria: "smash",
-      disponivel: true
-    },
-    {
-      id: "costela-brioche",
-      nome: "Costela no Brioche",
-      descricao: "Costela desfiada 8h na brasa, queijo coalho grelhado e barbecue defumado.",
-      preco: 36.90,
-      categoria: "especiais",
-      disponivel: true
-    },
-    {
-      id: "brasa-especial-duplo",
-      nome: "Brasa Especial Duplo",
-      descricao: "Dois smash de 120g, queijo cheddar duplo, bacon, ovo e onion rings.",
-      preco: 38.90,
-      categoria: "especiais",
-      disponivel: true
-    },
-    {
-      id: "batata-rustica",
-      nome: "Batata Rústica",
-      descricao: "Porção generosa com alecrim e páprica defumada.",
-      preco: 15.90,
-      categoria: "acompanhamentos",
-      disponivel: true
-    },
-    {
-      id: "onion-rings",
-      nome: "Onion Rings",
-      descricao: "Anéis de cebola empanados e crocantes, com molho barbecue.",
-      preco: 17.90,
-      categoria: "acompanhamentos",
-      disponivel: true
-    },
-    {
-      id: "refrigerante-lata",
-      nome: "Refrigerante Lata",
-      descricao: "Coca-Cola, Guaraná ou Sprite, 350ml.",
-      preco: 7.00,
-      categoria: "bebidas",
-      disponivel: true
-    },
-    {
-      id: "suco-natural",
-      nome: "Suco Natural",
-      descricao: "Laranja, limão ou maracujá, 400ml.",
-      preco: 10.00,
-      categoria: "bebidas",
-      disponivel: true
-    }
-  ];
 
-  function carregarProdutos() {
-    const salvos = localStorage.getItem("brasaBurgerProdutos");
+const CHAVE_PRODUTOS = "brasaBurgerProdutos";
 
-    if (salvos) {
+const produtosPadrao = [
+  {
+    id: "brasa-classico",
+    nome: "Brasa Clássico",
+    descricao: "Dois smash de 90g, queijo cheddar, cebola caramelizada e molho da casa no brioche.",
+    preco: 26.90,
+    categoria: "smash",
+    disponivel: true
+  },
+  {
+    id: "duplo-fumaca",
+    nome: "Duplo Fumaça",
+    descricao: "Dois smash de 90g, bacon crocante, queijo prato e maionese defumada.",
+    preco: 31.90,
+    categoria: "smash",
+    disponivel: true
+  },
+  {
+    id: "simples-brasa",
+    nome: "Simples Brasa",
+    descricao: "Um smash de 90g, queijo cheddar e picles no brioche. Direto ao ponto.",
+    preco: 19.90,
+    categoria: "smash",
+    disponivel: true
+  },
+  {
+    id: "costela-brioche",
+    nome: "Costela no Brioche",
+    descricao: "Costela desfiada 8h na brasa, queijo coalho grelhado e barbecue defumado.",
+    preco: 36.90,
+    categoria: "especiais",
+    disponivel: true
+  },
+  {
+    id: "brasa-especial-duplo",
+    nome: "Brasa Especial Duplo",
+    descricao: "Dois smash de 120g, queijo cheddar duplo, bacon, ovo e onion rings.",
+    preco: 38.90,
+    categoria: "especiais",
+    disponivel: true
+  },
+  {
+    id: "batata-rustica",
+    nome: "Batata Rústica",
+    descricao: "Porção generosa com alecrim e páprica defumada.",
+    preco: 15.90,
+    categoria: "acompanhamentos",
+    disponivel: true
+  },
+  {
+    id: "onion-rings",
+    nome: "Onion Rings",
+    descricao: "Anéis de cebola empanados e crocantes, com molho barbecue.",
+    preco: 17.90,
+    categoria: "acompanhamentos",
+    disponivel: true
+  },
+  {
+    id: "refrigerante-lata",
+    nome: "Refrigerante Lata",
+    descricao: "Coca-Cola, Guaraná ou Sprite, 350ml.",
+    preco: 7.00,
+    categoria: "bebidas",
+    disponivel: true
+  },
+  {
+    id: "suco-natural",
+    nome: "Suco Natural",
+    descricao: "Laranja, limão ou maracujá, 400ml.",
+    preco: 10.00,
+    categoria: "bebidas",
+    disponivel: true
+  }
+];
+
+function carregarProdutos() {
+  const salvos = localStorage.getItem(CHAVE_PRODUTOS);
+
+  if (salvos) {
+    try {
       return JSON.parse(salvos);
+    } catch (erro) {
+      console.error("Erro ao carregar produtos:", erro);
     }
-
-    localStorage.setItem(
-      "brasaBurgerProdutos",
-      JSON.stringify(produtosPadrao)
-    );
-
-    return produtosPadrao;
   }
 
-  function renderizarProdutos() {
-    const produtos = carregarProdutos();
-    const lista = document.getElementById("lista-produtos");
+  localStorage.setItem(
+    CHAVE_PRODUTOS,
+    JSON.stringify(produtosPadrao)
+  );
 
-    lista.innerHTML = "";
+  return [...produtosPadrao];
+}
 
-    produtos.forEach((produto, index) => {
-      const bloco = document.createElement("div");
-      bloco.className = "produto";
+function obterProdutosDaTela() {
+  const produtos = carregarProdutos();
 
-      bloco.innerHTML = `
-        <h2>${produto.nome}</h2>
+  return produtos.map((produto, index) => ({
+    ...produto,
+    nome: document.getElementById(`nome-${index}`)?.value.trim() || produto.nome,
+    descricao: document.getElementById(`descricao-${index}`)?.value.trim() || produto.descricao,
+    preco: Number(document.getElementById(`preco-${index}`)?.value || produto.preco),
+    categoria: document.getElementById(`categoria-${index}`)?.value || produto.categoria,
+    disponivel: document.getElementById(`disponivel-${index}`)?.checked ?? produto.disponivel
+  }));
+}
 
-        <label>Nome do produto</label>
-        <input
-          type="text"
-          id="nome-${index}"
-          value="${produto.nome}"
-        />
+function renderizarProdutos() {
+  const produtos = carregarProdutos();
+  const lista = document.getElementById("lista-produtos");
 
-        <label>Descrição</label>
-        <textarea
-          id="descricao-${index}"
-        >${produto.descricao}</textarea>
+  lista.innerHTML = "";
 
-        <div class="linha">
-          <div>
-            <label>Preço</label>
-            <input
-              type="number"
-              step="0.01"
-              id="preco-${index}"
-              value="${produto.preco}"
-            />
-          </div>
+  produtos.forEach((produto, index) => {
+    const bloco = document.createElement("div");
+    bloco.className = "produto";
 
-          <div>
-            <label>Categoria</label>
-            <input
-              type="text"
-              id="categoria-${index}"
-              value="${produto.categoria}"
-            />
-          </div>
+    bloco.innerHTML = `
+      <div class="produto-topo">
+        <h2>${produto.nome || "Novo produto"}</h2>
+
+        <div class="acoes-produto">
+          <button class="subir" onclick="moverProduto(${index}, -1)">
+            ↑ Subir
+          </button>
+
+          <button class="descer" onclick="moverProduto(${index}, 1)">
+            ↓ Descer
+          </button>
+
+          <button class="excluir" onclick="excluirProduto(${index})">
+            Excluir
+          </button>
+        </div>
+      </div>
+
+      <label>Nome do produto</label>
+      <input
+        type="text"
+        id="nome-${index}"
+        value="${produto.nome}"
+      />
+
+      <label>Descrição</label>
+      <textarea id="descricao-${index}">${produto.descricao}</textarea>
+
+      <div class="linha">
+        <div>
+          <label>Preço (R$)</label>
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            id="preco-${index}"
+            value="${produto.preco}"
+          />
         </div>
 
-        <label class="disponivel">
-          <input
-            type="checkbox"
-            id="disponivel-${index}"
-            ${produto.disponivel ? "checked" : ""}
-          />
-          Produto disponível
-        </label>
-      `;
+        <div>
+          <label>Categoria</label>
+          <select id="categoria-${index}">
+            <option value="smash" ${produto.categoria === "smash" ? "selected" : ""}>
+              Smash Burgers
+            </option>
 
-      lista.appendChild(bloco);
-    });
-  }
+            <option value="especiais" ${produto.categoria === "especiais" ? "selected" : ""}>
+              Especiais
+            </option>
 
-  function salvarProdutos() {
-    const produtos = carregarProdutos();
+            <option value="acompanhamentos" ${produto.categoria === "acompanhamentos" ? "selected" : ""}>
+              Acompanhamentos
+            </option>
 
-    const atualizados = produtos.map((produto, index) => ({
-      ...produto,
-      nome: document.getElementById(`nome-${index}`).value,
-      descricao: document.getElementById(`descricao-${index}`).value,
-      preco: Number(document.getElementById(`preco-${index}`).value),
-      categoria: document.getElementById(`categoria-${index}`).value,
-      disponivel: document.getElementById(`disponivel-${index}`).checked
-    }));
+            <option value="bebidas" ${produto.categoria === "bebidas" ? "selected" : ""}>
+              Bebidas
+            </option>
+          </select>
+        </div>
+      </div>
 
-    localStorage.setItem(
-      "brasaBurgerProdutos",
-      JSON.stringify(atualizados)
-    );
+      <label class="disponivel">
+        <input
+          type="checkbox"
+          id="disponivel-${index}"
+          ${produto.disponivel ? "checked" : ""}
+        />
+        Produto disponível no cardápio
+      </label>
+    `;
 
-    const mensagem = document.getElementById("mensagem");
-    mensagem.style.display = "block";
+    lista.appendChild(bloco);
+  });
+}
 
-    setTimeout(() => {
-      mensagem.style.display = "none";
-    }, 2500);
+function salvarProdutos() {
+  const atualizados = obterProdutosDaTela();
 
-    renderizarProdutos();
-  }
+  localStorage.setItem(
+    CHAVE_PRODUTOS,
+    JSON.stringify(atualizados)
+  );
 
-  function resetarProdutos() {
-    const confirmar = confirm(
-      "Deseja restaurar todos os produtos para os valores originais?"
-    );
-
-    if (!confirmar) return;
-
-    localStorage.setItem(
-      "brasaBurgerProdutos",
-      JSON.stringify(produtosPadrao)
-    );
-
-    renderizarProdutos();
-  }
+  mostrarMensagem("✓ Alterações salvas neste navegador.");
 
   renderizarProdutos();
+}
+
+function adicionarProduto() {
+  const produtos = obterProdutosDaTela();
+
+  produtos.push({
+    id: "produto-" + Date.now(),
+    nome: "Novo produto",
+    descricao: "Descrição do produto",
+    preco: 0,
+    categoria: "smash",
+    disponivel: true
+  });
+
+  localStorage.setItem(
+    CHAVE_PRODUTOS,
+    JSON.stringify(produtos)
+  );
+
+  renderizarProdutos();
+}
+
+function excluirProduto(index) {
+  const produtos = obterProdutosDaTela();
+
+  const confirmar = confirm(
+    `Deseja excluir "${produtos[index].nome}"?`
+  );
+
+  if (!confirmar) return;
+
+  produtos.splice(index, 1);
+
+  localStorage.setItem(
+    CHAVE_PRODUTOS,
+    JSON.stringify(produtos)
+  );
+
+  renderizarProdutos();
+
+  mostrarMensagem("✓ Produto excluído.");
+}
+
+function moverProduto(index, direcao) {
+  const produtos = obterProdutosDaTela();
+
+  const novoIndex = index + direcao;
+
+  if (
+    novoIndex < 0 ||
+    novoIndex >= produtos.length
+  ) {
+    return;
+  }
+
+  const temporario = produtos[index];
+  produtos[index] = produtos[novoIndex];
+  produtos[novoIndex] = temporario;
+
+  localStorage.setItem(
+    CHAVE_PRODUTOS,
+    JSON.stringify(produtos)
+  );
+
+  renderizarProdutos();
+}
+
+function resetarProdutos() {
+  const confirmar = confirm(
+    "Deseja restaurar todos os produtos para os valores originais?"
+  );
+
+  if (!confirmar) return;
+
+  localStorage.setItem(
+    CHAVE_PRODUTOS,
+    JSON.stringify(produtosPadrao)
+  );
+
+  renderizarProdutos();
+
+  mostrarMensagem("✓ Cardápio restaurado.");
+}
+
+function mostrarMensagem(texto) {
+  const mensagem = document.getElementById("mensagem");
+
+  mensagem.textContent = texto;
+  mensagem.style.display = "block";
+
+  setTimeout(() => {
+    mensagem.style.display = "none";
+  }, 2500);
+}
+
+renderizarProdutos();
+
 </script>
 
 </body>
